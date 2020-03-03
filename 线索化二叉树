@@ -1,0 +1,65 @@
+#include "stdio.h"
+#include "stdlib.h"
+typedef char ElemType;
+
+//定义节点结构
+typedef struct BiThrNode{
+	ElemType data;
+	struct BiThrNode *lchild,*rchild;
+	int ltag,rtag;
+}BiThrNode,*BiThrTree;
+
+//全局变量-----指向刚刚访问过的节点
+BiThrTree pre;
+
+//创建线索二叉树-----约定前序遍历创建
+void CreateBiThrTree(BiThrTree &T){
+	char c;
+	scanf("%c",&c);
+	if(c=='#'){
+		T=NULL;
+	}
+	else{
+		T=(BiThrTree)malloc(sizeof(BiThrNode));
+		T->data=c;
+		T->ltag=0;
+		T->rtag=0;
+
+		CreateBiThrTree(T->lchild);
+		CreateBiThrTree(T->rchild);
+	}
+}
+
+//中序遍历线索化二叉树
+void InThread(BiThrTree &p,BiThrTree &pre){
+	if(p!=NULL){
+		InThread(p->lchild,pre);
+		if(p->lchild==NULL){
+			p->ltag=1;
+			p->lchild=pre;
+		}
+		if(pre!=NULL&&pre->rchild==NULL){
+			pre->rchild=p;
+			pre->rtag=1;
+		}
+		pre=p;
+		InThread(p->rchild,pre);
+	}
+}
+
+//主过程算法
+void CreateInThread(BiThrTree &T){
+	BiThrTree pre=NULL;
+	if(T!=NULL){
+		InThread(T,pre);
+		pre->rchild=NULL;
+		pre->rtag=1;
+	}
+}
+
+
+void main(){
+	BiThrTree T;
+	CreateBiThrTree(T);
+	CreateInThread(T);
+}
